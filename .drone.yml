@@ -10,6 +10,15 @@ steps:
       when:
           event:
               - pull_request
+
+    - name: phpstan
+      image: phpstan/phpstan
+      commands:
+          - phpstan analyze
+      when:
+          event:
+              - pull_request
+
     - name: install
       image: local/${DRONE_REPO_NAME}
       commands:
