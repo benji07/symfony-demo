@@ -21,6 +21,8 @@ steps:
 
     - name: test
       image: local/${DRONE_REPO_NAME}
+      docker:
+          tty: true
       commands:
           - SYMFONY_PHPUNIT_DIR=./bin/.phpunit
           - SYMFONY_DEPRECATIONS_HELPER=29
