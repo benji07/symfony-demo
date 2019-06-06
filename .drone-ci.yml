@@ -1,0 +1,19 @@
+kind: pipeline
+name: default
+
+steps:
+    - name: provision
+      build:
+          image: local/${DRONE_REPO_NAME}
+          context: .
+          dockerfile: Dockerfile.ci
+      when:
+          event:
+              - pull_request
+    - name: install
+      image: local/${DRONE_REPO_NAME}
+      commands:
+          - composer install --verbose --no-progress --no-interaction --no-scripts
+      when:
+          event:
+              - pull_request
