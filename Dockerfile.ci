@@ -48,6 +48,7 @@ RUN echo "deb https://packages.sury.org/php/ stretch main" > /etc/apt/sources.li
         php7.2-xml \
         php7.2-mysql \
         php7.2-zip \
+        php7.2-sqlite \
     # Composer
     && curl -sSL https://getcomposer.org/installer | php -- --install-dir /usr/local/bin --filename composer
 
