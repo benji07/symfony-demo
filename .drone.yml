@@ -13,9 +13,7 @@ steps:
     - name: install
       image: local/${DRONE_REPO_NAME}
       commands:
-          - whoami
-          - pwd
-          - ls -la
+          - composer install --verbose --no-progress --no-interaction --no-scripts
       when:
           event:
               - pull_request
