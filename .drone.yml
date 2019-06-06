@@ -13,7 +13,32 @@ steps:
     - name: install
       image: local/${DRONE_REPO_NAME}
       commands:
-          - composer install --verbose --no-progress --no-interaction --no-scripts
+          - composer install
+          - ./bin/phpunit install
+      when:
+          event:
+              - pull_request
+
+    - name: test
+      image: local/${DRONE_REPO_NAME}
+      commands:
+          - SYMFONY_PHPUNIT_DIR=./bin/.phpunit
+          - SYMFONY_DEPRECATIONS_HELPER=29
+          - ./bin/phpunit
+          # this checks that the source code follows the Symfony Code Syntax rules
+          - ./vendor/bin/php-cs-fixer fix --diff --dry-run -v
+          # this checks that the YAML config files contain no syntax errors
+          - ./bin/console lint:yaml config
+          # this checks that the Twig template files contain no syntax errors
+          - ./bin/console lint:twig templates
+          # this checks that the XLIFF translations contain no syntax errors
+          - ./bin/console lint:xliff translations
+          # this checks that the application doesn't use dependencies with known security vulnerabilities
+          - ./bin/console security:check
+          # this checks that Doctrine's mapping configurations are valid
+          - ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
+          #  Fail CI if the repo is in a dirty state after building assets
+          - yarn install && yarn encore production && git add --all && git diff --staged --shortstat --exit-code
       when:
           event:
               - pull_request
