@@ -5,6 +5,8 @@ steps:
     - name: provision
       build:
           image: local/${DRONE_REPO_NAME}
+          docker:
+              tty: true
           context: .
           dockerfile: Dockerfile.ci
       when:
@@ -12,6 +14,8 @@ steps:
               - pull_request
     - name: install
       image: local/${DRONE_REPO_NAME}
+      docker:
+          tty: true
       commands:
           - composer install
           - ./bin/phpunit install
@@ -26,7 +30,6 @@ steps:
       commands:
           - SYMFONY_PHPUNIT_DIR=./bin/.phpunit
           - SYMFONY_DEPRECATIONS_HELPER=29
-          - ./bin/phpunit
           # this checks that the source code follows the Symfony Code Syntax rules
           - ./vendor/bin/php-cs-fixer fix --diff --dry-run -v
           # this checks that the YAML config files contain no syntax errors
@@ -41,6 +44,7 @@ steps:
           - ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
           #  Fail CI if the repo is in a dirty state after building assets
           - yarn install && yarn encore production && git add --all && git diff --staged --shortstat --exit-code
+          - ./bin/phpunit
       when:
           event:
               - pull_request
